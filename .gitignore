@@ -1,3 +1,6 @@
+# Baixa Ai do Youtube Logs
+logs/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
