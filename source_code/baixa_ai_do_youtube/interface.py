@@ -25,7 +25,7 @@ class Interface:
         """
         Carrega a interface
         """
-        self.main_window = uic.loadUi("../baixa_ai_do_youtube/gui/main_ui.ui")
+        self.main_window = uic.loadUi("./baixa_ai_do_youtube/gui/main_ui.ui")
 
 
     def update_progress_bar(self, value):
