@@ -5,6 +5,7 @@ from datetime import datetime
 from os import getcwd
 from .color import get_color_hex
 from .youtube import YoutubeDownloader
+from .database import Database
 from threading import Thread
 
 class Interface:
@@ -181,7 +182,7 @@ class Interface:
         self.file_path = self.main_window.lineEdit_filePath.text()
         self.youtube_link = self.main_window.lineEdit_youtubeLink.text().replace(" ", "")
 
-        yt_downloader = YoutubeDownloader(self, self.youtube_link, self.file_path, self.get_combo_box_value())
+        yt_downloader = YoutubeDownloader(self, self.youtube_link, self.file_path, self.get_combo_box_value(), Database())
             
         # Thread para executar o processo de download em paralelo.
         thread_yt_downloader = Thread(target=yt_downloader.start, daemon=True, name="thread_yt_downloader")
