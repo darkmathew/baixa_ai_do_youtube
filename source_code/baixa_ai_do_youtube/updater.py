@@ -7,10 +7,13 @@ from zipfile import ZipFile
 
 class Updater:
     def __init__(self):
-        self.json_url = "https://github.com/darkmathew/baixa_ai_do_youtube/tree/main/source_code/appversion.json"
+        #self.json_url = "https://raw.githubusercontent.com/darkmathew/baixa_ai_do_youtube/tree/main/source_code/appversion.json"
+        self.json_url = "https://raw.githubusercontent.com/darkmathew/baixa_ai_do_youtube/tests_for_v1_3/source_code/appversion.json"
         self.repo_base_url = "https://github.com/darkmathew/baixa_ai_do_youtube/raw/main/windows_executable/"
         self.pyinstaller_one_file_url = self.repo_base_url + "baixa_ai_do_youtube_option1.rar"
         self.pyinstaller_one_folder_url = self.repo_base_url + "baixa_ai_do_youtube_option2.rar"
+        self.json_filename = "appversion.json"
+        
 
     def check_for_updates(self):
         """
@@ -19,35 +22,32 @@ class Updater:
         if self.get_latest_version() > self.read_json()["version"]:
             self.download_latest_version()
         
-    def read_json(self):
+    def read_json(self) -> dict:
         """
         Lê o arquivo JSON.
         """
-        if exists("appversion.json"):
-            if not self.validate_json_keys():
-                self.create_json_file()
-                
-            with open("appversion.json", "r") as file:
-                return loads(file.read())
-        else:
-            self.create_json_file()
-
-    def validate_json_keys(self):
+        self.create_json_file()
+        with open(self.json_filename, "r", encoding="utf-8") as file:
+            json_data = loads(file.read())
+            if not self.validate_json_keys(json_data):
+                self.create_json_file()            
+            print(json_data)
+            return json_data
+            
+    def validate_json_keys(self, json):
         """
         Valida as chaves do arquivo JSON.
         """
-        json = self.read_json()
-        if json:
-            if "version" in json and "program_option" in json:
-                return True
+        if "version" in json.keys() and "program_option" in json.keys():
+            return True
         return False
 
     def create_json_file(self):
         """
         Cria o arquivo JSON.
         """
-        if not exists("appversion.json"):
-            with open("appversion.json", "w", encoding="utf-8") as file:
+        if not exists(self.json_filename):
+            with open(self.json_filename, "w", encoding="utf-8") as file:
                 file.write(dumps(
                     {"version": 0.0, "program_option": 0}
                 ))
@@ -73,8 +73,9 @@ class Updater:
             case _:
                 # Impedir que o programa seja executado
                 return False
-
-        return self.install_latest_version(request_file)
+        print("Baixou a versão mais recente do programa.")
+        return True
+        #return self.install_latest_version(request_file)
 
     def install_latest_version(self, request_file) -> bool:
         """
