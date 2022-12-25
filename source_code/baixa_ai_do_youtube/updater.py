@@ -31,7 +31,6 @@ class Updater:
             json_data = loads(file.read())
             if not self.validate_json_keys(json_data):
                 self.create_json_file()            
-            print(json_data)
             return json_data
             
     def validate_json_keys(self, json):
