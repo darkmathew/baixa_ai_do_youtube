@@ -10,8 +10,8 @@ class Updater:
         #self.json_url = "https://raw.githubusercontent.com/darkmathew/baixa_ai_do_youtube/tree/main/source_code/appversion.json"
         self.json_url = "https://raw.githubusercontent.com/darkmathew/baixa_ai_do_youtube/tests_for_v1_3/source_code/appversion.json"
         self.repo_base_url = "https://github.com/darkmathew/baixa_ai_do_youtube/raw/main/windows_executable/"
-        self.pyinstaller_one_file_url = self.repo_base_url + "baixa_ai_do_youtube_option1.rar"
-        self.pyinstaller_one_folder_url = self.repo_base_url + "baixa_ai_do_youtube_option2.rar"
+        self.pyinstaller_one_file_url = self.repo_base_url + "baixa_ai_do_youtube_option1.zip"
+        self.pyinstaller_one_folder_url = self.repo_base_url + "baixa_ai_do_youtube_option2.zip"
         self.json_filename = "appversion.json"
         self.app = app
 
