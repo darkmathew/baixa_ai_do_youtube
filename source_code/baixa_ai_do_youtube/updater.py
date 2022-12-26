@@ -6,22 +6,31 @@ from io import BytesIO
 from zipfile import ZipFile
 
 class Updater:
-    def __init__(self):
+    def __init__(self, app) -> None:
         #self.json_url = "https://raw.githubusercontent.com/darkmathew/baixa_ai_do_youtube/tree/main/source_code/appversion.json"
         self.json_url = "https://raw.githubusercontent.com/darkmathew/baixa_ai_do_youtube/tests_for_v1_3/source_code/appversion.json"
         self.repo_base_url = "https://github.com/darkmathew/baixa_ai_do_youtube/raw/main/windows_executable/"
         self.pyinstaller_one_file_url = self.repo_base_url + "baixa_ai_do_youtube_option1.rar"
         self.pyinstaller_one_folder_url = self.repo_base_url + "baixa_ai_do_youtube_option2.rar"
         self.json_filename = "appversion.json"
-        
+        self.app = app
 
-    def check_for_updates(self):
+    def check_for_updates(self) -> bool:
         """
         Procura por atualizações.
+
+        can_launch_the_app: bool - Determina se o programa pode ser executado.
         """
-        if self.get_latest_version() > self.read_json()["version"]:
-            self.download_latest_version()
-        
+        can_launch_the_app = True
+        if self.get_latest_version() != self.read_json()["version"]:
+            
+            can_update = self.app.show_update_notification()
+            if can_update:        
+                self.download_latest_version()
+            else:
+                can_launch_the_app = False
+        return can_launch_the_app
+
     def read_json(self) -> dict:
         """
         Lê o arquivo JSON.
@@ -33,22 +42,22 @@ class Updater:
                 self.create_json_file()            
             return json_data
             
-    def validate_json_keys(self, json):
+    def validate_json_keys(self, json) -> bool:
         """
         Valida as chaves do arquivo JSON.
         """
-        if "version" in json.keys() and "program_option" in json.keys():
+        if "version" in json.keys() and "option" in json.keys():
             return True
         return False
 
-    def create_json_file(self):
+    def create_json_file(self) -> None:
         """
         Cria o arquivo JSON.
         """
         if not exists(self.json_filename):
             with open(self.json_filename, "w", encoding="utf-8") as file:
                 file.write(dumps(
-                    {"version": 0.0, "program_option": 0}
+                    {"version": 0.0, "option": 0}
                 ))
 
     def get_latest_version(self):
@@ -89,7 +98,7 @@ class Updater:
             return True
         return False
 
-    def get_program_option_installed(self):
+    def get_program_option_installed(self) -> int:
         """
         Obtém qual opção de programa o usuário escolheu instalar.
 
@@ -99,4 +108,6 @@ class Updater:
         """
         json = self.read_json()
         if json:
-            return int(json["program_option"])
+            return int(json["option"])
+        return -1
+    
