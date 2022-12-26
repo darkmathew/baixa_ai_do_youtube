@@ -248,8 +248,7 @@ class Interface:
         )
         message_box.addButton('   Baixar Atualização   ', message_box.ActionRole)
         message_box.addButton('Não quero atualizar', message_box.ActionRole)
-        message_box.exec_()
-        button_changed = message_box.clickedButton()
+        button_changed = message_box.exec_()
         if button_changed == 0:
             return True
         return False

@@ -81,9 +81,7 @@ class Updater:
             case _:
                 # Impedir que o programa seja executado
                 return False
-        print("Baixou a versão mais recente do programa.")
-        return True
-        #return self.install_latest_version(request_file)
+        return self.install_latest_version(request_file)
 
     def install_latest_version(self, request_file) -> bool:
         """
