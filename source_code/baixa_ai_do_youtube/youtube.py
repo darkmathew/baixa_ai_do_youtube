@@ -7,12 +7,12 @@ from moviepy.audio.io.AudioFileClip import AudioFileClip
 
 class YoutubeDownloader:
 
-    def __init__(self, app_interface, youtube_link: str, file_path: str, download_option: str) -> None:
+    def __init__(self, app_interface, youtube_link: str, file_path: str, download_option: str, database) -> None:
         self.app_interface = app_interface
         self.youtube_link = youtube_link
         self.file_path = file_path
         self.download_option = download_option
-
+        self.database = database
 
     def start(self):
                     
@@ -115,7 +115,8 @@ class YoutubeDownloader:
 
     def download_high_resolution_video(self, video: YouTube) -> bool:
         try:
-            video.streams.get_highest_resolution().download(self.file_path)
+            file_path = video.streams.get_highest_resolution().download(self.file_path)
+            self.database.add_to_database("mp4", file_path.split(self.file_path)[1].replace("\\", ""))
         except Exception as error:
             self.app_interface.logger.log(error)
             return False
@@ -124,7 +125,8 @@ class YoutubeDownloader:
 
     def download_low_resolution_video(self, video: YouTube) -> bool:
         try:
-            video.streams.get_lowest_resolution().download(self.file_path)
+            file_path = video.streams.get_lowest_resolution().download(self.file_path)
+            self.database.add_to_database("mp4", file_path.split(self.file_path)[1].replace("\\", ""))
         except Exception as error:
             self.app_interface.logger.log(error)
             return False
@@ -135,7 +137,7 @@ class YoutubeDownloader:
         amount_videos_converted = 0
         for file in os.listdir(self.file_path):
             
-            if re.search(video_format, file):
+            if re.search(video_format, file) and self.database.check_if_file_is_in_database("mp4", file):
                 
                 self.app_interface.update_text_edit_log(f"Convertendo {file} para mp3")                                
                 
@@ -144,6 +146,8 @@ class YoutubeDownloader:
                 
                 new_file = AudioFileClip(mp4_path)
                 new_file.write_audiofile(mp3_path)
+
+                self.database.add_to_database("mp3", mp3_path.split(self.file_path)[1].replace("\\", ""))
                 
                 if remove_video:
                     os.remove(mp4_path)

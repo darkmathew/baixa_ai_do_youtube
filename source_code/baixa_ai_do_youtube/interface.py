@@ -1,10 +1,11 @@
-from PyQt5.QtWidgets import QApplication, QFileDialog, QLineEdit
+from PyQt5.QtWidgets import QApplication, QFileDialog, QLineEdit, QMessageBox
 from PyQt5 import uic, QtCore
 from qt_thread_updater import get_updater
 from datetime import datetime
 from os import getcwd
 from .color import get_color_hex
 from .youtube import YoutubeDownloader
+from .database import Database
 from threading import Thread
 
 class Interface:
@@ -14,21 +15,21 @@ class Interface:
         self.logger = logger
         self.get_color_hexadecimal = get_color_hex
 
-    def start(self):
+    def start(self) -> None:
         self.load_window()
         self.conect_buttons()
 
         self.main_window.show()
 
 
-    def load_window(self):
+    def load_window(self) -> None:
         """
         Carrega a interface
         """
         self.main_window = uic.loadUi("./baixa_ai_do_youtube/gui/main_ui.ui")
 
 
-    def update_progress_bar(self, value):
+    def update_progress_bar(self, value) -> None:
         """
         Atualiza a progress bar na interface
         """
@@ -36,7 +37,7 @@ class Interface:
             self.main_window.progressBar.setValue, value
         )
 
-    def update_label_status(self, text, color="white", text_color="white", default_text_color="white"):
+    def update_label_status(self, text, color="white", text_color="white", default_text_color="white") -> None:
         """
         Atualiza o label de status na interface
         """
@@ -47,7 +48,7 @@ class Interface:
         text_color = self.get_color_hexadecimal(default_text_color)
 
 
-    def update_text_edit_log(self, text, color="white", bold=False, with_time=True, default_color="white"):
+    def update_text_edit_log(self, text, color="white", bold=False, with_time=True, default_color="white") -> None:
         """
         Atualiza o text edit de log na interface
         """
@@ -62,12 +63,12 @@ class Interface:
         get_updater().call_in_main(self.main_window.textEdit_activities.append, final_text)
         color = self.get_color_hexadecimal(default_color)
 
-    def conect_buttons(self):
+    def conect_buttons(self) -> None:
         self.main_window.pushButton_Download.clicked.connect(self.start_download_process)
         self.main_window.pushButton_openFileDialog.clicked.connect(self.select_path)
 
     
-    def combobox_changed(self):
+    def combobox_changed(self) -> None:
         self.main_window.comboBox.currentIndexChanged.connect(self.get_combo_box_value)
 
 
@@ -91,7 +92,7 @@ class Interface:
                 return "mp3_only"
     
 
-    def handle_buttons(self, is_active: bool = False):
+    def handle_buttons(self, is_active: bool = False) -> None:
         """
         Habilita ou desabilita os botões da interface.
         """
@@ -103,7 +104,7 @@ class Interface:
             button.setEnabled(is_active)
 
 
-    def handle_line_edits(self, is_active: bool = False):
+    def handle_line_edits(self, is_active: bool = False) -> None:
         """
         Habilita ou desabilita os campos de texto da interface.
         """
@@ -115,7 +116,7 @@ class Interface:
             line_edit.setEnabled(is_active)
 
 
-    def reset_line_edits(self):
+    def reset_line_edits(self) -> None:
         """
         Limpa os campos de texto da interface.
         """
@@ -127,7 +128,7 @@ class Interface:
             line_edit.setText("")
 
 
-    def select_path(self):
+    def select_path(self) -> None:
         """
         Abre uma janela para o usuário selecionar o diretório onde os arquivos serão salvos.
         """
@@ -165,7 +166,7 @@ class Interface:
 
         return True
 
-    def start_download_process(self):
+    def start_download_process(self) -> None:
         """
         Inicia o processo de download.
         """
@@ -181,14 +182,14 @@ class Interface:
         self.file_path = self.main_window.lineEdit_filePath.text()
         self.youtube_link = self.main_window.lineEdit_youtubeLink.text().replace(" ", "")
 
-        yt_downloader = YoutubeDownloader(self, self.youtube_link, self.file_path, self.get_combo_box_value())
+        yt_downloader = YoutubeDownloader(self, self.youtube_link, self.file_path, self.get_combo_box_value(), Database())
             
         # Thread para executar o processo de download em paralelo.
         thread_yt_downloader = Thread(target=yt_downloader.start, daemon=True, name="thread_yt_downloader")
         thread_yt_downloader.start()
 
 
-    def download_completed(self):
+    def download_completed(self) -> None:
         """
         Executa ações quando o download é finalizado.
         """
@@ -205,7 +206,7 @@ class Interface:
         
         
         
-    def download_failed(self):
+    def download_failed(self) -> None:
         """
         Executa ações quando o download falha.
         """
@@ -219,3 +220,35 @@ class Interface:
         self.handle_line_edits(True)
         self.reset_line_edits()
         self.update_progress_bar(0)
+
+    def show_message_box(self, title: str, message: str, icon: QMessageBox.Icon = QMessageBox.Warning) -> QMessageBox:
+        """
+        Exibe uma caixa de mensagem para o usuário.
+
+        title: Título da caixa de mensagem.
+        message: Mensagem a ser exibida.
+        icon: Ícone a ser exibido na caixa de mensagem.
+        """
+        messagebox = QMessageBox()
+        messagebox.setIcon(icon)
+        messagebox.setWindowTitle(title)
+        messagebox.setText(message)
+        return messagebox
+
+    
+    def show_update_notification(self) -> bool:
+        """
+        Exibe uma caixa de mensagem para o usuário informando que há uma nova versão disponível para download.
+
+        Retorna True se o usuário clicar em 'Baixar Atualização'. Retorna False se o usuário clicar em 'Não quero atualizar'.
+        """        
+        message_box : QMessageBox = self.show_message_box(
+            "Atualização disponível", 
+            "Foi detectado que há uma nova versão disponível para este aplicativo. O download será iniciado automaticamente ao clicar em 'Baixar Atualização'. O tempo de download pode variar de acordo com a velocidade da sua internet."
+        )
+        message_box.addButton('   Baixar Atualização   ', message_box.ActionRole)
+        message_box.addButton('Não quero atualizar', message_box.ActionRole)
+        button_changed = message_box.exec_()
+        if button_changed == 0:
+            return True
+        return False
