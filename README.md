@@ -10,8 +10,8 @@ Com este programa você consegue baixar o seguinte:
 
 ## Download
 
-- [(Opção 1) Clique aqui para Baixar](./windows_executable/baixa_ai_do_youtube_option1.rar)
-- [(Opção 2) Clique aqui para Baixar](./windows_executable/baixa_ai_do_youtube_option2.rar)
+- [(Opção 1) Clique aqui para Baixar](./windows_executable/baixa_ai_do_youtube_option1.zip)
+- [(Opção 2) Clique aqui para Baixar](./windows_executable/baixa_ai_do_youtube_option2.zip)
 
 **Obsevação:** Voce precisará ter o [Winrar](https://www.win-rar.com/postdownload.html?&L=9) ou [7zip](https://www.7-zip.org/download.html) para extrair a pasta do programa, e então poder executá-lo.
 
